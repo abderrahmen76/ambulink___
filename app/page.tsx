@@ -1,4 +1,4 @@
-﻿const patientDownloadUrl = 'https://www.dropbox.com/scl/fi/7bfp95wxuydsskktgc0so/ambulink.apk?rlkey=7ux9jdw9czxax2jvf35ka6c5u&st=f4bqn9oa&dl=1';
+﻿const patientDownloadUrl = 'https://www.dropbox.com/scl/fi/sdgqcp0myvcz3lxmpzs2g/ambulink_platform.apk?rlkey=mb28ozw7s7jfckq760nwuhm54&st=6yhtt9q5&dl=1';
 const mobileDownloadUrl = 'https://www.dropbox.com/scl/fi/x8hwdxc68nixmb4thiqy7/mobile_app.apk?rlkey=mhczw5rcn8vdk0r56t7vpnlse&st=3z8mv78b&dl=1';
 
 export default function HomePage() {
