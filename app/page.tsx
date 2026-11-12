@@ -106,7 +106,7 @@ const downloadCards = [
     tagLabel: 'Patients',
     title: 'AmbuLink',
     description: 'Application Android pour demander et suivre une ambulance.',
-    link: 'https://www.dropbox.com/scl/fi/sdgqcp0myvcz3lxmpzs2g/ambulink_platform.apk?rlkey=mb28ozw7s7jfckq760nwuhm54&st=6yhtt9q5&dl=1',
+    link: 'https://www.dropbox.com/scl/fi/dw4myvax5023bfwo3dcw0/ambulink.apk?rlkey=bdyia96cr0hdx9gpb7unizi66&st=9yfc5fo2&dl=1',
     buttonText: 'Télécharger l\'app patient',
   },
   {
