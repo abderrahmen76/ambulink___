@@ -11,6 +11,12 @@ Place your APK files here:
 
 The landing page buttons already point to those paths.
 
+## Demo requests
+
+The demo buttons open a form that submits directly to Formspree without a page reload.
+The endpoint is configured in `app/demo-request.tsx`. Formspree must be configured
+and activated to receive submissions; no application backend is required.
+
 ## Run locally
 
 ```bash

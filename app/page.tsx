@@ -1,4 +1,6 @@
-﻿const problemCards = [
+﻿import DemoRequest from './demo-request';
+
+const problemCards = [
   {
     title: 'Appels et WhatsApp',
     description: 'Plusieurs appels pour trouver une ambulance libre : des minutes perdues pour le patient.',
@@ -173,7 +175,7 @@ export default function HomePage() {
             <a href="#fonctionnement">Fonctionnement</a>
             <a href="#pour-qui">Pour qui</a>
             <a href="#telechargements">Télécharger</a>
-            <a href="#contact" className="btn btn-red small">Demander une démo</a>
+            <DemoRequest small />
           </nav>
         </div>
       </header>
@@ -187,7 +189,7 @@ export default function HomePage() {
               <h1>De la demande à la destination, <span>en une seule plateforme.</span></h1>
               <p className="lead">AmbuLink connecte patients, sociétés d'ambulances privées et cliniques en temps réel. Notre IA choisit le meilleur trajet, les équipes gèrent leurs missions depuis une seule application et la clinique prépare l'arrivée du patient.</p>
               <div className="cta-row">
-                <a href="#contact" className="btn btn-red">Demander une démo</a>
+                <DemoRequest />
                 <a href="#telechargements" className="btn btn-ghost">Télécharger les applications</a>
               </div>
             </div>
@@ -349,7 +351,7 @@ export default function HomePage() {
               <p className="eyebrow light">Contact</p>
               <h2>Parlons de votre flotte ou de votre clinique.</h2>
               <p className="lead">Sociétés d'ambulances, cliniques, investisseurs et partenaires : écrivez-nous pour une démonstration en direct.</p>
-              <a className="btn btn-red" href="mailto:ambulink.contact@gmail.com?subject=Demande%20de%20d%C3%A9mo%20AmbuLink">Demander une démo</a>
+              <DemoRequest />
             </div>
             <ul className="contact-list">
               <li><span>E-mail</span><a href="mailto:ambulink.contact@gmail.com">ambulink.contact@gmail.com</a></li>
