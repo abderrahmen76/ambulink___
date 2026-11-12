@@ -47,6 +47,7 @@ const appCards = [
       'Compatible montre connectée',
     ],
     images: ['/p1.jpg', '/p2.jpg', '/p3.jpg'],
+    imageSizes: [[512, 907], [504, 907], [505, 898]],
     imagesAlt: [
       'AmbuLink : écran de demande d\'ambulance',
       'AmbuLink : informations du patient',
@@ -65,6 +66,7 @@ const appCards = [
       'Recommandations de l\'IA pour le manager',
     ],
     images: ['/a1.jpg', '/a3.jpg', '/a4.jpg'],
+    imageSizes: [[540, 1158], [493, 890], [596, 1280]],
     imagesAlt: [
       'AmbuLink Mobile : écran ambulancier',
       'AmbuLink Mobile : écran manager',
@@ -83,6 +85,7 @@ const appCards = [
       'Coordination avec les sociétés d\'ambulances',
     ],
     images: ['/c1.jpg'],
+    imageSizes: [[1600, 721]],
     imagesAlt: ['Clinic App : tableau de bord'],
   },
 ];
@@ -162,7 +165,7 @@ export default function HomePage() {
       <header className="nav" id="top">
         <div className="wrap nav-in">
           <a href="#top" className="brand" aria-label="AmbuLink, retour en haut">
-            <img src="/logo.png" alt="AmbuLink" />
+            <img src="/logo.png" alt="AmbuLink" width={634} height={525} />
           </a>
           <button className="menu-btn" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="menu">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -195,12 +198,12 @@ export default function HomePage() {
             </div>
             <div className="hero-visual">
               <div className="hero-circle">
-                <img src="/hero.jpg" alt="Les trois applications AmbuLink et une ambulance" />
+                <img src="/hero.jpg" alt="Les trois applications AmbuLink et une ambulance" width={640} height={595} />
               </div>
             </div>
           </div>
           <div className="wrap award">
-            <img src="/trophy.jpg" alt="Trophée Summit Start-up, AI Forward Summit 2026" />
+            <img src="/trophy.jpg" alt="Trophée Summit Start-up, AI Forward Summit 2026" width={657} height={700} />
             <p><strong>Prix de l'esprit d'innovation</strong><br />Summit Start-up, AI Forward Summit 2026</p>
           </div>
         </section>
@@ -264,7 +267,7 @@ export default function HomePage() {
                 </div>
                 <div className={`shots ${app.images.length > 1 ? 'phones' : 'desk'}`}>
                   {app.images.map((img, i) => (
-                    <img key={i} src={img} alt={app.imagesAlt[i]} loading="lazy" />
+                    <img key={i} src={img} alt={app.imagesAlt[i]} width={app.imageSizes[i][0]} height={app.imageSizes[i][1]} loading="lazy" />
                   ))}
                 </div>
               </div>
@@ -316,7 +319,7 @@ export default function HomePage() {
             <div className="grid3">
               {forWhom.map((item, idx) => (
                 <article className="who" key={idx}>
-                  <img src={item.image} alt="" />
+                  <img src={item.image} alt="" width={124} height={124} />
                   <h3>{item.title}</h3>
                   <p>{item.description}</p>
                 </article>
@@ -364,7 +367,7 @@ export default function HomePage() {
 
       <footer className="foot">
         <div className="wrap foot-in">
-          <img src="/logo.png" alt="AmbuLink" />
+          <img src="/logo.png" alt="AmbuLink" width={634} height={525} />
           <p>© <span id="y">2026</span> AmbuLink · Sfax, Tunisie</p>
           <a href="#top">Retour en haut ↑</a>
         </div>

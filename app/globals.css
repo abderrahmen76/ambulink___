@@ -27,6 +27,7 @@ body {
   font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 17px;
   line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 img {
@@ -61,10 +62,12 @@ h1, h2, h3 {
   justify-content: center;
   gap: 8px;
   min-height: 48px;
+  max-width: 100%;
   padding: 12px 24px;
   border-radius: 999px;
   font-weight: 700;
   text-decoration: none;
+  text-align: center;
   transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
 }
 
@@ -196,7 +199,7 @@ button.btn.small {
 .hero-in {
   position: relative;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: 48px;
   align-items: center;
 }
@@ -272,6 +275,7 @@ button.btn.small {
   height: 56px;
   object-fit: cover;
   border-radius: 12px;
+  flex-shrink: 0;
 }
 
 .award strong {
@@ -372,7 +376,7 @@ button.btn.small {
 /* apps */
 .app {
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
   gap: 48px;
   align-items: center;
   margin-top: 64px;
@@ -459,6 +463,7 @@ button.btn.small {
 }
 
 .shots.desk img {
+  height: auto;
   border-radius: 14px;
   border: 8px solid var(--ink);
   box-shadow: 0 14px 30px rgba(2, 27, 74, 0.18);
@@ -545,6 +550,11 @@ button.btn.small {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  min-width: 0;
+}
+
+.dl .btn {
+  max-width: 100%;
 }
 
 .dl h3 {
@@ -584,7 +594,7 @@ button.btn.small {
 
 .contact-in {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   gap: 48px;
   align-items: center;
 }
@@ -767,6 +777,7 @@ button.btn.small {
 
 .foot img {
   height: 44px;
+  width: auto;
   background: #fff;
   border-radius: 10px;
   padding: 2px 6px;
@@ -782,7 +793,7 @@ button.btn.small {
 }
 
 /* responsive */
-@media (max-width: 960px) {
+@media (max-width: 1023.98px) {
   .hero-in,
   .app,
   .contact-in {
@@ -798,8 +809,9 @@ button.btn.small {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .grid3 {
-    grid-template-columns: 1fr;
+  .grid3,
+  #telechargements .grid3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .menu-btn {
@@ -812,6 +824,8 @@ button.btn.small {
     top: 72px;
     left: 0;
     right: 0;
+    max-height: calc(100dvh - 72px);
+    overflow-y: auto;
     background: #fff;
     flex-direction: column;
     align-items: stretch;
@@ -845,14 +859,35 @@ button.btn.small {
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 767.98px) {
   body {
     font-size: 16px;
   }
 
   .grid4,
-  .steps {
+  .grid3,
+  .steps,
+  #telechargements .grid3 {
     grid-template-columns: 1fr;
+  }
+
+  .section {
+    padding: 56px 0;
+  }
+
+  .card,
+  .who,
+  .contact-list {
+    padding: 24px;
+  }
+
+  .app {
+    gap: 28px;
+    margin-top: 48px;
+  }
+
+  .app h3 {
+    font-size: clamp(24px, 6vw, 30px);
   }
 
   .shots {
@@ -872,6 +907,19 @@ button.btn.small {
     width: 100%;
   }
 
+  .dl .btn {
+    width: 100%;
+  }
+
+  .foot-in {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+}
+
+@media (max-width: 560px) {
   .demo-modal {
     padding: 28px 20px;
   }
