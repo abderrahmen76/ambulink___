@@ -25,6 +25,19 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.currentTarget.files?.[0];
+    if (file) {
+      const maxSize = 5 * 1024 * 1024; // 5MB limit
+      if (file.size > maxSize) {
+        setSubmitStatus('error');
+        setTimeout(() => setSubmitStatus('idle'), 3000);
+        e.currentTarget.value = '';
+        alert('Fichier trop volumineux. Taille maximale: 5MB');
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -32,15 +45,31 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
 
     try {
       const formElement = e.currentTarget;
+      const cvFile = (formElement.querySelector('input[name="cv"]') as HTMLInputElement)?.files?.[0];
+      
+      // Validate file exists and size
+      if (!cvFile) {
+        setSubmitStatus('error');
+        alert('Veuillez sélectionner un fichier CV');
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (cvFile.size > 5 * 1024 * 1024) {
+        setSubmitStatus('error');
+        alert('Fichier trop volumineux. Taille maximale: 5MB');
+        setIsSubmitting(false);
+        return;
+      }
+
       const formDataToSend = new FormData(formElement);
       
       const response = await fetch('https://formspree.io/f/mjywgpao', {
         method: 'POST',
         body: formDataToSend,
-        headers: {
-          'Accept': 'application/json',
-        },
       });
+
+      const responseData = await response.json();
 
       if (response.ok) {
         setSubmitStatus('success');
@@ -52,11 +81,16 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
           project2: subjects[1] || '',
           project3: subjects[2] || '',
         });
+        // Reset file input
+        const fileInput = formElement.querySelector('input[name="cv"]') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+        
         setTimeout(() => {
           onClose();
           setSubmitStatus('idle');
         }, 1500);
       } else {
+        console.error('Form submission failed:', responseData);
         setSubmitStatus('error');
       }
     } catch (error) {
@@ -93,7 +127,7 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
 
           {submitStatus === 'error' && (
             <div className="form-message error">
-              ✗ Une erreur s'est produite. Veuillez réessayer.
+              ✗ Une erreur s'est produite. Veuillez vérifier que tous les champs sont remplis et que le CV ne dépasse pas 5MB, puis réessayez.
             </div>
           )}
 
@@ -141,12 +175,13 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
             </div>
 
             <div className="form-group">
-              <label htmlFor="cv">Télécharger CV (PDF, DOC, DOCX)</label>
+              <label htmlFor="cv">Télécharger CV (PDF, DOC, DOCX - Max 5MB)</label>
               <input
                 type="file"
                 id="cv"
                 name="cv"
                 accept=".pdf,.doc,.docx"
+                onChange={handleFileChange}
                 required
                 disabled={isSubmitting}
               />
