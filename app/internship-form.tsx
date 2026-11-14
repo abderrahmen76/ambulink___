@@ -57,7 +57,43 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
         return;
       }
 
-      // Prepare form data
+      let uploadedFileName = '';
+
+      // Upload CV to Dropbox if provided
+      if (cvFile) {
+        console.log('Uploading CV to Dropbox...');
+        const uploadFormData = new FormData();
+        uploadFormData.append('cv', cvFile);
+        uploadFormData.append('email', formData.email);
+
+        try {
+          const uploadResponse = await fetch('/api/upload-cv', {
+            method: 'POST',
+            body: uploadFormData,
+          });
+
+          const uploadResult = await uploadResponse.json();
+
+          if (!uploadResponse.ok) {
+            console.error('Dropbox upload failed:', uploadResult);
+            setSubmitStatus('error');
+            alert('Erreur lors de l\'upload du CV. Veuillez réessayer.');
+            setIsSubmitting(false);
+            return;
+          }
+
+          uploadedFileName = uploadResult.filename;
+          console.log('CV uploaded successfully to Dropbox:', uploadedFileName);
+        } catch (uploadError) {
+          console.error('Upload error:', uploadError);
+          setSubmitStatus('error');
+          alert('Erreur lors de l\'upload du CV. Veuillez réessayer.');
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      // Prepare form data for Formspree
       let formDataToSend = new FormData();
       formDataToSend.append('firstName', formData.firstName);
       formDataToSend.append('lastName', formData.lastName);
@@ -66,14 +102,13 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
       formDataToSend.append('project2', formData.project2);
       formDataToSend.append('project3', formData.project3);
 
-      // Add CV if provided or note to send via email
-      if (cvFile) {
-        formDataToSend.append('cv', cvFile);
-        formDataToSend.append('message', `💼 CV: ${cvFile.name}\n📧 Candidat: ${formData.firstName} ${formData.lastName} (${formData.email})\n\nNote: Le candidat peut aussi envoyer directement le CV à ambulink.contact@gmail.com`);
-        console.log('Submitting with CV file:', cvFile.name, `(${cvFile.size} bytes)`);
+      // Add message with file info
+      if (uploadedFileName) {
+        formDataToSend.append('message', `✅ CV uploaded to Dropbox\nFilename: ${uploadedFileName}\n\n📧 Candidat: ${formData.firstName} ${formData.lastName}\nEmail: ${formData.email}`);
+        console.log('Submitting form with Dropbox CV reference');
       } else {
-        formDataToSend.append('message', `📧 Candidat: ${formData.firstName} ${formData.lastName}\nEmail: ${formData.email}\n\n⚠️ IMPORTANT: Le candidat doit envoyer son CV directement par email à ambulink.contact@gmail.com en mentionnant son email pour compléter sa candidature.`);
-        console.log('Submitting without CV file - CV should be sent separately via email');
+        formDataToSend.append('message', `📧 Candidat: ${formData.firstName} ${formData.lastName}\nEmail: ${formData.email}\n\nℹ️ No CV file provided`);
+        console.log('Submitting form without CV');
       }
 
       console.log('Sending form to Formspree...');
@@ -158,7 +193,7 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
             <div className="form-message success">
               <div style={{ marginBottom: '12px' }}>✓ Candidature reçue avec succès !</div>
               <div style={{ fontSize: '14px', color: '#0e8a5f', fontWeight: '500' }}>
-                📧 Veuillez envoyer votre CV à <strong>ambulink.contact@gmail.com</strong> en mentionnant votre email pour compléter votre candidature.
+                ✅ Votre CV a été sauvegardé dans notre système. Nous vous contacterons bientôt.
               </div>
             </div>
           )}
@@ -223,7 +258,7 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
                 disabled={isSubmitting}
               />
               <small style={{ color: '#4A5878', fontSize: '13px', marginTop: '4px' }}>
-                <strong>Important:</strong> Veuillez envoyer votre CV par email à <strong>ambulink.contact@gmail.com</strong> en mentionnant votre email et vos choix de projets après avoir soumis ce formulaire.
+                Téléchargez votre CV - il sera automatiquement sauvegardé dans nos dossiers.
               </small>
             </div>
 
