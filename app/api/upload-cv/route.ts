@@ -13,6 +13,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get Dropbox token from environment
+    const dropboxToken = process.env.NEXT_PUBLIC_DROPBOX_TOKEN;
+    if (!dropboxToken) {
+      console.error('Dropbox token not configured');
+      return NextResponse.json(
+        { error: 'Server configuration error: Dropbox token missing' },
+        { status: 500 }
+      );
+    }
+
     // Read file content
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -23,11 +33,14 @@ export async function POST(request: NextRequest) {
     const filename = `${sanitizedEmail}_${timestamp}_${file.name}`;
     const dropboxPath = `/Internships/${filename}`;
 
+    console.log(`[Dropbox] Uploading file: ${filename} to ${dropboxPath}`);
+    console.log(`[Dropbox] Token present: ${dropboxToken ? 'yes' : 'no'}`);
+
     // Upload to Dropbox
     const dropboxResponse = await fetch('https://content.dropboxapi.com/2/files/upload', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_DROPBOX_TOKEN}`,
+        'Authorization': `Bearer ${dropboxToken}`,
         'Dropbox-API-Arg': JSON.stringify({
           path: dropboxPath,
           mode: 'add',
@@ -40,9 +53,11 @@ export async function POST(request: NextRequest) {
       body: buffer,
     });
 
+    console.log(`[Dropbox] Response status: ${dropboxResponse.status}`);
+
     if (!dropboxResponse.ok) {
       const errorData = await dropboxResponse.json();
-      console.error('Dropbox upload error:', errorData);
+      console.error('[Dropbox] Upload error:', errorData);
       return NextResponse.json(
         { error: 'Failed to upload to Dropbox', details: errorData },
         { status: 500 }
@@ -50,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     const dropboxResult = await dropboxResponse.json();
-    console.log('File uploaded to Dropbox:', dropboxResult);
+    console.log('[Dropbox] File uploaded successfully:', dropboxResult);
 
     return NextResponse.json({
       success: true,
@@ -59,7 +74,7 @@ export async function POST(request: NextRequest) {
       message: 'File uploaded successfully',
     });
   } catch (error: any) {
-    console.error('Upload error:', error);
+    console.error('[Dropbox] Upload exception:', error);
     return NextResponse.json(
       { error: 'Upload failed', details: error.message },
       { status: 500 }
