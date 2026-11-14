@@ -66,13 +66,14 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
       formDataToSend.append('project2', formData.project2);
       formDataToSend.append('project3', formData.project3);
 
-      // Add CV if provided
+      // Add CV if provided or note to send via email
       if (cvFile) {
         formDataToSend.append('cv', cvFile);
+        formDataToSend.append('message', `💼 CV: ${cvFile.name}\n📧 Candidat: ${formData.firstName} ${formData.lastName} (${formData.email})\n\nNote: Le candidat peut aussi envoyer directement le CV à ambulink.contact@gmail.com`);
         console.log('Submitting with CV file:', cvFile.name, `(${cvFile.size} bytes)`);
       } else {
-        formDataToSend.append('message', `Note: Vous pouvez envoyer votre CV directement à ambulink.contact@gmail.com en mentionnant votre email ${formData.email}`);
-        console.log('Submitting without CV file');
+        formDataToSend.append('message', `📧 Candidat: ${formData.firstName} ${formData.lastName}\nEmail: ${formData.email}\n\n⚠️ IMPORTANT: Le candidat doit envoyer son CV directement par email à ambulink.contact@gmail.com en mentionnant son email pour compléter sa candidature.`);
+        console.log('Submitting without CV file - CV should be sent separately via email');
       }
 
       console.log('Sending form to Formspree...');
@@ -155,7 +156,10 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
 
           {submitStatus === 'success' && (
             <div className="form-message success">
-              ✓ Candidature envoyée avec succès !
+              <div style={{ marginBottom: '12px' }}>✓ Candidature reçue avec succès !</div>
+              <div style={{ fontSize: '14px', color: '#0e8a5f', fontWeight: '500' }}>
+                📧 Veuillez envoyer votre CV à <strong>ambulink.contact@gmail.com</strong> en mentionnant votre email pour compléter votre candidature.
+              </div>
             </div>
           )}
 
@@ -209,7 +213,7 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
             </div>
 
             <div className="form-group">
-              <label htmlFor="cv">Télécharger CV (PDF, DOC, DOCX - Max 5MB - Optionnel)</label>
+              <label htmlFor="cv">📎 Joindre votre CV (PDF, DOC, DOCX)</label>
               <input
                 type="file"
                 id="cv"
@@ -219,7 +223,7 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
                 disabled={isSubmitting}
               />
               <small style={{ color: '#4A5878', fontSize: '13px', marginTop: '4px' }}>
-                Facultatif. Vous pouvez aussi envoyer votre CV par email à ambulink.contact@gmail.com après soumission du formulaire.
+                <strong>Important:</strong> Veuillez envoyer votre CV par email à <strong>ambulink.contact@gmail.com</strong> en mentionnant votre email et vos choix de projets après avoir soumis ce formulaire.
               </small>
             </div>
 
