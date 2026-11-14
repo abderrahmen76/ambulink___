@@ -64,12 +64,28 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
 
       const formDataToSend = new FormData(formElement);
       
+      console.log('Submitting form with fields:');
+      for (let pair of formDataToSend.entries()) {
+        console.log(pair[0], pair[1] instanceof File ? `File: ${(pair[1] as File).name} (${(pair[1] as File).size} bytes)` : pair[1]);
+      }
+
+      // Try with file first
       const response = await fetch('https://formspree.io/f/mjywgpao', {
         method: 'POST',
         body: formDataToSend,
       });
 
-      const responseData = await response.json();
+      let responseData: any;
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('application/json')) {
+        responseData = await response.json();
+      } else {
+        responseData = await response.text();
+      }
+
+      console.log('Response status:', response.status);
+      console.log('Response data:', responseData);
 
       if (response.ok) {
         setSubmitStatus('success');
@@ -90,8 +106,48 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
           setSubmitStatus('idle');
         }, 1500);
       } else {
-        console.error('Form submission failed:', responseData);
-        setSubmitStatus('error');
+        // If file upload fails, try again without the file and add a note
+        console.warn('File upload may have failed. Status:', response.status);
+        
+        const formDataWithoutFile = new FormData();
+        formDataWithoutFile.append('firstName', formData.firstName);
+        formDataWithoutFile.append('lastName', formData.lastName);
+        formDataWithoutFile.append('email', formData.email);
+        formDataWithoutFile.append('project1', formData.project1);
+        formDataWithoutFile.append('project2', formData.project2);
+        formDataWithoutFile.append('project3', formData.project3);
+        formDataWithoutFile.append('message', `CV filename: ${cvFile.name}\n\nNote: Veuillez envoyer votre CV directement à ambulink.contact@gmail.com en mentionnant votre email ${formData.email}`);
+
+        const retryResponse = await fetch('https://formspree.io/f/mjywgpao', {
+          method: 'POST',
+          body: formDataWithoutFile,
+        });
+
+        const retryData = retryResponse.json ? await retryResponse.json() : await retryResponse.text();
+        console.log('Retry response status:', retryResponse.status);
+        console.log('Retry response data:', retryData);
+
+        if (retryResponse.ok) {
+          setSubmitStatus('success');
+          setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            project1: subjects[0] || '',
+            project2: subjects[1] || '',
+            project3: subjects[2] || '',
+          });
+          const fileInput = formElement.querySelector('input[name="cv"]') as HTMLInputElement;
+          if (fileInput) fileInput.value = '';
+          
+          setTimeout(() => {
+            onClose();
+            setSubmitStatus('idle');
+          }, 1500);
+        } else {
+          console.error('Form submission failed:', retryData);
+          setSubmitStatus('error');
+        }
       }
     } catch (error) {
       console.error('Form submission error:', error);
@@ -127,7 +183,7 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
 
           {submitStatus === 'error' && (
             <div className="form-message error">
-              ✗ Une erreur s'est produite. Veuillez vérifier que tous les champs sont remplis et que le CV ne dépasse pas 5MB, puis réessayez.
+              ✗ Une erreur s'est produite. Veuillez vérifier votre connexion internet et réessayez. Si le problème persiste, envoyez votre CV directement à ambulink.contact@gmail.com
             </div>
           )}
 
@@ -185,6 +241,9 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
                 required
                 disabled={isSubmitting}
               />
+              <small style={{ color: '#4A5878', fontSize: '13px', marginTop: '4px' }}>
+                Si le CV ne peut pas être envoyé via le formulaire, vous devrez l'envoyer par email à ambulink.contact@gmail.com
+              </small>
             </div>
 
             <div className="form-group">
