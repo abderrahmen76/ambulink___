@@ -141,6 +141,18 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
             </div>
 
             <div className="form-group">
+              <label htmlFor="cv">Télécharger CV (PDF, DOC, DOCX)</label>
+              <input
+                type="file"
+                id="cv"
+                name="cv"
+                accept=".pdf,.doc,.docx"
+                required
+                disabled={isSubmitting}
+              />
+            </div>
+
+            <div className="form-group">
               <label htmlFor="project1">1er choix de projet</label>
               <select
                 id="project1"
@@ -334,6 +346,32 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
           font-size: 16px;
           color: #0B1B3D;
           transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .form-group input[type="file"] {
+          padding: 10px;
+          cursor: pointer;
+        }
+
+        .form-group input[type="file"]::file-selector-button {
+          padding: 8px 16px;
+          background: #1D55C9;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          margin-right: 12px;
+          transition: background 0.15s;
+        }
+
+        .form-group input[type="file"]::file-selector-button:hover {
+          background: #1547a3;
+        }
+
+        .form-group input[type="file"]:disabled::file-selector-button {
+          background: #DCE3F0;
+          cursor: not-allowed;
         }
 
         .form-group input::placeholder {
