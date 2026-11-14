@@ -427,35 +427,22 @@ export default function HomePage() {
             <p className="eyebrow">Carrière</p>
             <h2>Rejoignez notre équipe en stage.</h2>
             <p className="sub">Explorez nos offres de stage en engineering et business. Téléchargez la brochure complète ou postulez directement.</p>
-            <div className="internships-grid">
-              {internships.map((internship) => (
-                <article className="internship-card" key={internship.id}>
-                  <div className="internship-header">
-                    <span className={`tag ${internship.category === 'Engineering' ? 'blue' : 'red'}`}>
-                      {internship.category}
-                    </span>
-                    <h3>{internship.title}</h3>
-                  </div>
-                  <p className="internship-desc">{internship.description}</p>
-                  <div className="internship-actions">
-                    <a
-                      href="/AmbuLink_PFE_Book.pdf"
-                      download
-                      className="btn btn-secondary"
-                      title="Télécharger la brochure PFE"
-                    >
-                      📥 Brochure PDF
-                    </a>
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => setFormOpen(true)}
-                      title="Postuler à ce stage"
-                    >
-                      📝 Postuler
-                    </button>
-                  </div>
-                </article>
-              ))}
+            <div className="internships-cta">
+              <a
+                href="/AmbuLink_PFE_Book.pdf"
+                download
+                className="btn btn-secondary"
+                title="Télécharger la brochure PFE complète"
+              >
+                📥 Télécharger la brochure PDF
+              </a>
+              <button
+                className="btn btn-primary"
+                onClick={() => setFormOpen(true)}
+                title="Postuler à un stage"
+              >
+                📝 Postuler à un stage
+              </button>
             </div>
           </div>
         </section>
@@ -502,95 +489,53 @@ export default function HomePage() {
       <InternshipForm isOpen={formOpen} onClose={() => setFormOpen(false)} subjects={allSubjects} />
 
       <style jsx>{`
-        .internships-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 24px;
+        .internships-cta {
+          display: flex;
+          gap: 16px;
+          justify-content: center;
+          flex-wrap: wrap;
           margin-top: 40px;
         }
 
-        .internship-card {
-          background: var(--white);
-          border: 1px solid var(--line);
-          border-radius: 16px;
-          padding: 24px;
-          transition: transform 0.15s, box-shadow 0.15s;
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
-
-        .internship-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 10px 30px rgba(2, 27, 74, 0.12);
-        }
-
-        .internship-header {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .internship-header .tag {
-          width: fit-content;
-        }
-
-        .internship-header h3 {
-          font-size: 18px;
-          color: var(--ink);
-        }
-
-        .internship-desc {
-          color: var(--muted);
-          font-size: 15px;
-          margin: 0;
-          flex-grow: 1;
-        }
-
-        .internship-actions {
-          display: flex;
-          gap: 12px;
-          flex-wrap: wrap;
-          margin-top: auto;
+        .internships-cta .btn {
+          padding: 14px 28px;
+          font-size: 16px;
+          font-weight: 600;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          text-decoration: none;
+          display: inline-block;
+          border: none;
         }
 
         .btn-primary {
           background: var(--blue);
           color: white;
-          border: none;
-          flex: 1;
-          min-width: 140px;
         }
 
         .btn-primary:hover {
           background: #1547a3;
+          transform: translateY(-2px);
         }
 
         .btn-secondary {
           background: var(--soft);
           color: var(--blue);
-          border: none;
-          flex: 1;
-          min-width: 140px;
         }
 
         .btn-secondary:hover {
           background: #dde9ff;
+          transform: translateY(-2px);
         }
 
         @media (max-width: 640px) {
-          .internships-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .internship-actions {
+          .internships-cta {
             flex-direction: column;
           }
 
-          .btn-primary,
-          .btn-secondary {
-            min-width: auto;
-            flex: 1;
+          .internships-cta .btn {
+            width: 100%;
           }
         }
       `}</style>

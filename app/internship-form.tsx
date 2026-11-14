@@ -13,7 +13,9 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
     firstName: '',
     lastName: '',
     email: '',
-    subject: subjects[0] || '',
+    project1: subjects[0] || '',
+    project2: subjects[1] || '',
+    project3: subjects[2] || '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -46,7 +48,9 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
           firstName: '',
           lastName: '',
           email: '',
-          subject: subjects[0] || '',
+          project1: subjects[0] || '',
+          project2: subjects[1] || '',
+          project3: subjects[2] || '',
         });
         setTimeout(() => {
           onClose();
@@ -137,11 +141,47 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
             </div>
 
             <div className="form-group">
-              <label htmlFor="subject">Sujet internship</label>
+              <label htmlFor="project1">1er choix de projet</label>
               <select
-                id="subject"
-                name="subject"
-                value={formData.subject}
+                id="project1"
+                name="project1"
+                value={formData.project1}
+                onChange={handleChange}
+                required
+                disabled={isSubmitting}
+              >
+                {subjects.map(subject => (
+                  <option key={subject} value={subject}>
+                    {subject}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="project2">2ème choix de projet</label>
+              <select
+                id="project2"
+                name="project2"
+                value={formData.project2}
+                onChange={handleChange}
+                required
+                disabled={isSubmitting}
+              >
+                {subjects.map(subject => (
+                  <option key={subject} value={subject}>
+                    {subject}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="project3">3ème choix de projet</label>
+              <select
+                id="project3"
+                name="project3"
+                value={formData.project3}
                 onChange={handleChange}
                 required
                 disabled={isSubmitting}
