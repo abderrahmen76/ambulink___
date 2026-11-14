@@ -64,12 +64,14 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
 
       const formDataToSend = new FormData(formElement);
       
+      console.log('=== FORM SUBMISSION START ===');
       console.log('Submitting form with fields:');
       for (let pair of formDataToSend.entries()) {
         console.log(pair[0], pair[1] instanceof File ? `File: ${(pair[1] as File).name} (${(pair[1] as File).size} bytes)` : pair[1]);
       }
 
       // Try with file first
+      console.log('Attempting to send form WITH file to Formspree...');
       const response = await fetch('https://formspree.io/f/mjywgpao', {
         method: 'POST',
         body: formDataToSend,
@@ -84,10 +86,11 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
         responseData = await response.text();
       }
 
-      console.log('Response status:', response.status);
-      console.log('Response data:', responseData);
+      console.log('First attempt - Response status:', response.status);
+      console.log('First attempt - Response data:', responseData);
 
       if (response.ok) {
+        console.log('SUCCESS! Form submitted with file');
         setSubmitStatus('success');
         setFormData({
           firstName: '',
@@ -107,7 +110,7 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
         }, 1500);
       } else {
         // If file upload fails, try again without the file and add a note
-        console.warn('File upload may have failed. Status:', response.status);
+        console.warn('First attempt failed. Attempting fallback without file...');
         
         const formDataWithoutFile = new FormData();
         formDataWithoutFile.append('firstName', formData.firstName);
@@ -118,14 +121,22 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
         formDataWithoutFile.append('project3', formData.project3);
         formDataWithoutFile.append('message', `CV filename: ${cvFile.name}\n\nNote: Veuillez envoyer votre CV directement à ambulink.contact@gmail.com en mentionnant votre email ${formData.email}`);
 
+        console.log('Attempting to send form WITHOUT file...');
         const retryResponse = await fetch('https://formspree.io/f/mjywgpao', {
           method: 'POST',
           body: formDataWithoutFile,
         });
 
-        const retryData = retryResponse.json ? await retryResponse.json() : await retryResponse.text();
+        let retryData: any;
+        if (retryResponse.ok) {
+          retryData = await retryResponse.json();
+        } else {
+          retryData = await retryResponse.text();
+        }
+
         console.log('Retry response status:', retryResponse.status);
         console.log('Retry response data:', retryData);
+        console.log('=== FORM SUBMISSION END ===');
 
         if (retryResponse.ok) {
           setSubmitStatus('success');
@@ -145,12 +156,21 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
             setSubmitStatus('idle');
           }, 1500);
         } else {
-          console.error('Form submission failed:', retryData);
+          console.error('Form submission failed on retry:', retryData);
+          console.error('Error details:', {
+            status: retryResponse.status,
+            statusText: retryResponse.statusText,
+            data: retryData
+          });
+          alert(`Erreur Formspree (${retryResponse.status}): ${typeof retryData === 'string' ? retryData : JSON.stringify(retryData)}`);
           setSubmitStatus('error');
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Form submission error:', error);
+      console.error('Error message:', error?.message);
+      console.error('Error stack:', error?.stack);
+      alert(`Erreur: ${error?.message || 'Erreur inconnue'}`);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
