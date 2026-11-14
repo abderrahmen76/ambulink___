@@ -1,4 +1,8 @@
-﻿import DemoRequest from './demo-request';
+﻿'use client';
+
+import { useState } from 'react';
+import DemoRequest from './demo-request';
+import InternshipForm from './internship-form';
 
 const problemCards = [
   {
@@ -130,6 +134,72 @@ const downloadCards = [
   },
 ];
 
+const internships = [
+  {
+    id: 'ing-01',
+    category: 'Engineering',
+    title: 'AI & Operations Research',
+    description: 'Optimiser les itinéraires et l\'allocation des ressources avec des algorithmes ML.',
+    subjects: ['ING-01: AI & Operations Research', 'ING-02: Computer Vision & NLP', 'ING-03: Data Science', 'ING-04: IoT/Embedded/Mobile', 'ING-05: Cybersecurity', 'ING-06: Cloud/DevOps', 'BUS-01: Sales & Marketing', 'BUS-02: Strategy & International', 'BUS-03: Finance'],
+  },
+  {
+    id: 'ing-02',
+    category: 'Engineering',
+    title: 'Computer Vision & NLP',
+    description: 'Traiter les images de vidéosurveillance et les données textuelles pour l\'IA.',
+    subjects: ['ING-01: AI & Operations Research', 'ING-02: Computer Vision & NLP', 'ING-03: Data Science', 'ING-04: IoT/Embedded/Mobile', 'ING-05: Cybersecurity', 'ING-06: Cloud/DevOps', 'BUS-01: Sales & Marketing', 'BUS-02: Strategy & International', 'BUS-03: Finance'],
+  },
+  {
+    id: 'ing-03',
+    category: 'Engineering',
+    title: 'Data Science',
+    description: 'Analyser les données de missions et créer des insights pour l\'optimisation.',
+    subjects: ['ING-01: AI & Operations Research', 'ING-02: Computer Vision & NLP', 'ING-03: Data Science', 'ING-04: IoT/Embedded/Mobile', 'ING-05: Cybersecurity', 'ING-06: Cloud/DevOps', 'BUS-01: Sales & Marketing', 'BUS-02: Strategy & International', 'BUS-03: Finance'],
+  },
+  {
+    id: 'ing-04',
+    category: 'Engineering',
+    title: 'IoT/Embedded/Mobile',
+    description: 'Développer les applications mobiles et les systèmes embarqués des ambulances.',
+    subjects: ['ING-01: AI & Operations Research', 'ING-02: Computer Vision & NLP', 'ING-03: Data Science', 'ING-04: IoT/Embedded/Mobile', 'ING-05: Cybersecurity', 'ING-06: Cloud/DevOps', 'BUS-01: Sales & Marketing', 'BUS-02: Strategy & International', 'BUS-03: Finance'],
+  },
+  {
+    id: 'ing-05',
+    category: 'Engineering',
+    title: 'Cybersecurity',
+    description: 'Sécuriser les données sensibles des patients et les communications.',
+    subjects: ['ING-01: AI & Operations Research', 'ING-02: Computer Vision & NLP', 'ING-03: Data Science', 'ING-04: IoT/Embedded/Mobile', 'ING-05: Cybersecurity', 'ING-06: Cloud/DevOps', 'BUS-01: Sales & Marketing', 'BUS-02: Strategy & International', 'BUS-03: Finance'],
+  },
+  {
+    id: 'ing-06',
+    category: 'Engineering',
+    title: 'Cloud/DevOps',
+    description: 'Déployer et maintenir l\'infrastructure cloud scalable d\'AmbuLink.',
+    subjects: ['ING-01: AI & Operations Research', 'ING-02: Computer Vision & NLP', 'ING-03: Data Science', 'ING-04: IoT/Embedded/Mobile', 'ING-05: Cybersecurity', 'ING-06: Cloud/DevOps', 'BUS-01: Sales & Marketing', 'BUS-02: Strategy & International', 'BUS-03: Finance'],
+  },
+  {
+    id: 'bus-01',
+    category: 'Business',
+    title: 'Sales & Marketing',
+    description: 'Développer la stratégie de go-to-market et les partenariats.',
+    subjects: ['ING-01: AI & Operations Research', 'ING-02: Computer Vision & NLP', 'ING-03: Data Science', 'ING-04: IoT/Embedded/Mobile', 'ING-05: Cybersecurity', 'ING-06: Cloud/DevOps', 'BUS-01: Sales & Marketing', 'BUS-02: Strategy & International', 'BUS-03: Finance'],
+  },
+  {
+    id: 'bus-02',
+    category: 'Business',
+    title: 'Strategy & International',
+    description: 'Étudier l\'expansion internationale et les stratégies de croissance.',
+    subjects: ['ING-01: AI & Operations Research', 'ING-02: Computer Vision & NLP', 'ING-03: Data Science', 'ING-04: IoT/Embedded/Mobile', 'ING-05: Cybersecurity', 'ING-06: Cloud/DevOps', 'BUS-01: Sales & Marketing', 'BUS-02: Strategy & International', 'BUS-03: Finance'],
+  },
+  {
+    id: 'bus-03',
+    category: 'Business',
+    title: 'Finance',
+    description: 'Analyser les modèles financiers et optimiser les revenus.',
+    subjects: ['ING-01: AI & Operations Research', 'ING-02: Computer Vision & NLP', 'ING-03: Data Science', 'ING-04: IoT/Embedded/Mobile', 'ING-05: Cybersecurity', 'ING-06: Cloud/DevOps', 'BUS-01: Sales & Marketing', 'BUS-02: Strategy & International', 'BUS-03: Finance'],
+  },
+];
+
 const aiAdvantages = [
   {
     title: 'Meilleur trajet pour le patient',
@@ -160,6 +230,9 @@ const getIconSvg = (type: string) => {
 };
 
 export default function HomePage() {
+  const [formOpen, setFormOpen] = useState(false);
+  const allSubjects = ['ING-01: AI & Operations Research', 'ING-02: Computer Vision & NLP', 'ING-03: Data Science', 'ING-04: IoT/Embedded/Mobile', 'ING-05: Cybersecurity', 'ING-06: Cloud/DevOps', 'BUS-01: Sales & Marketing', 'BUS-02: Strategy & International', 'BUS-03: Finance'];
+
   return (
     <>
       <header className="nav" id="top">
@@ -178,6 +251,7 @@ export default function HomePage() {
             <a href="#fonctionnement">Fonctionnement</a>
             <a href="#pour-qui">Pour qui</a>
             <a href="#telechargements">Télécharger</a>
+            <a href="#internships">Stages</a>
             <DemoRequest small />
           </nav>
         </div>
@@ -347,6 +421,45 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* INTERNSHIPS */}
+        <section className="section alt" id="internships">
+          <div className="wrap">
+            <p className="eyebrow">Carrière</p>
+            <h2>Rejoignez notre équipe en stage.</h2>
+            <p className="sub">Explorez nos offres de stage en engineering et business. Téléchargez la brochure complète ou postulez directement.</p>
+            <div className="internships-grid">
+              {internships.map((internship) => (
+                <article className="internship-card" key={internship.id}>
+                  <div className="internship-header">
+                    <span className={`tag ${internship.category === 'Engineering' ? 'blue' : 'red'}`}>
+                      {internship.category}
+                    </span>
+                    <h3>{internship.title}</h3>
+                  </div>
+                  <p className="internship-desc">{internship.description}</p>
+                  <div className="internship-actions">
+                    <a
+                      href="/AmbuLink_PFE_Book.pdf"
+                      download
+                      className="btn btn-secondary"
+                      title="Télécharger la brochure PFE"
+                    >
+                      📥 Brochure PDF
+                    </a>
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => setFormOpen(true)}
+                      title="Postuler à ce stage"
+                    >
+                      📝 Postuler
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* CONTACT */}
         <section className="section contact" id="contact">
           <div className="wrap contact-in">
@@ -385,6 +498,102 @@ export default function HomePage() {
           document.getElementById('y').textContent = new Date().getFullYear();
         })();
       `}</script>
+
+      <InternshipForm isOpen={formOpen} onClose={() => setFormOpen(false)} subjects={allSubjects} />
+
+      <style jsx>{`
+        .internships-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 24px;
+          margin-top: 40px;
+        }
+
+        .internship-card {
+          background: var(--white);
+          border: 1px solid var(--line);
+          border-radius: 16px;
+          padding: 24px;
+          transition: transform 0.15s, box-shadow 0.15s;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .internship-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 10px 30px rgba(2, 27, 74, 0.12);
+        }
+
+        .internship-header {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .internship-header .tag {
+          width: fit-content;
+        }
+
+        .internship-header h3 {
+          font-size: 18px;
+          color: var(--ink);
+        }
+
+        .internship-desc {
+          color: var(--muted);
+          font-size: 15px;
+          margin: 0;
+          flex-grow: 1;
+        }
+
+        .internship-actions {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          margin-top: auto;
+        }
+
+        .btn-primary {
+          background: var(--blue);
+          color: white;
+          border: none;
+          flex: 1;
+          min-width: 140px;
+        }
+
+        .btn-primary:hover {
+          background: #1547a3;
+        }
+
+        .btn-secondary {
+          background: var(--soft);
+          color: var(--blue);
+          border: none;
+          flex: 1;
+          min-width: 140px;
+        }
+
+        .btn-secondary:hover {
+          background: #dde9ff;
+        }
+
+        @media (max-width: 640px) {
+          .internships-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .internship-actions {
+            flex-direction: column;
+          }
+
+          .btn-primary,
+          .btn-secondary {
+            min-width: auto;
+            flex: 1;
+          }
+        }
+      `}</style>
     </>
   );
 }
