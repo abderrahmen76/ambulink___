@@ -1,11 +1,33 @@
 'use client';
 
 import { useState } from 'react';
+import { getCvExtension, MAX_CV_SIZE } from './cv-upload';
 
 interface InternshipFormProps {
   isOpen: boolean;
   onClose: () => void;
   subjects: string[];
+}
+
+async function getFormspreeError(response: Response): Promise<string> {
+  const fallback = `Formspree a refusé la candidature (code ${response.status}). Veuillez vérifier vos informations et réessayer.`;
+  if (!response.headers.get('content-type')?.includes('application/json')) return fallback;
+
+  try {
+    const data: unknown = await response.json();
+    if (typeof data !== 'object' || data === null || !('errors' in data) || !Array.isArray(data.errors)) return fallback;
+    const messages = data.errors
+      .map((item: unknown) =>
+        typeof item === 'object' && item !== null && 'message' in item && typeof item.message === 'string'
+          ? item.message
+          : ''
+      )
+      .filter(Boolean);
+    return messages.length ? `Formspree : ${messages.join(' ')}` : fallback;
+  } catch (error) {
+    console.error('Unable to read Formspree error response:', error);
+    return fallback;
+  }
 }
 
 export default function InternshipForm({ isOpen, onClose, subjects }: InternshipFormProps) {
@@ -19,6 +41,7 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -28,12 +51,11 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files?.[0];
     if (file) {
-      const maxSize = 5 * 1024 * 1024; // 5MB limit
-      if (file.size > maxSize) {
+      if (file.size > MAX_CV_SIZE) {
         setSubmitStatus('error');
         setTimeout(() => setSubmitStatus('idle'), 3000);
         e.currentTarget.value = '';
-        alert('Fichier trop volumineux. Taille maximale: 5MB');
+        alert('Fichier trop volumineux. Taille maximale : 4 Mo.');
       }
     }
   };
@@ -42,6 +64,7 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus('idle');
+    setErrorMessage('');
 
     try {
       const formElement = e.currentTarget;
@@ -50,21 +73,24 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
       console.log('=== FORM SUBMISSION START ===');
 
       // Check file size if file exists
-      if (cvFile && cvFile.size > 5 * 1024 * 1024) {
+      if (cvFile && cvFile.size > MAX_CV_SIZE) {
         setSubmitStatus('error');
-        alert('Fichier trop volumineux. Taille maximale: 5MB');
+        alert('Fichier trop volumineux. Taille maximale : 4 Mo.');
         setIsSubmitting(false);
         return;
       }
 
-      let uploadedFileName = '';
+      if (cvFile && !getCvExtension(cvFile.name)) {
+        setSubmitStatus('error');
+        alert('Formats acceptés : PDF, DOC et DOCX.');
+        return;
+      }
 
-      // Upload CV to Dropbox if provided
+      let uploadedPath = '';
+
       if (cvFile) {
-        console.log('Uploading CV to Dropbox...');
         const uploadFormData = new FormData();
         uploadFormData.append('cv', cvFile);
-        uploadFormData.append('email', formData.email);
 
         try {
           const uploadResponse = await fetch('/api/upload-cv', {
@@ -72,29 +98,25 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
             body: uploadFormData,
           });
 
-          const uploadResult = await uploadResponse.json();
-
           if (!uploadResponse.ok) {
-            console.error('Dropbox upload failed:', uploadResult);
-            setSubmitStatus('error');
-            alert('Erreur lors de l\'upload du CV. Veuillez réessayer.');
-            setIsSubmitting(false);
-            return;
+            throw new Error(`CV upload returned status ${uploadResponse.status}`);
           }
 
-          uploadedFileName = uploadResult.filename;
-          console.log('CV uploaded successfully to Dropbox:', uploadedFileName);
+          const uploadResult = await uploadResponse.json();
+          if (typeof uploadResult.pathname !== 'string' || !uploadResult.pathname) {
+            throw new Error('CV upload returned an invalid response');
+          }
+          uploadedPath = uploadResult.pathname;
         } catch (uploadError) {
           console.error('Upload error:', uploadError);
+          setErrorMessage('Impossible de sauvegarder le CV. Veuillez réessayer ou envoyer votre CV à ambulink.contact@gmail.com.');
           setSubmitStatus('error');
-          alert('Erreur lors de l\'upload du CV. Veuillez réessayer.');
-          setIsSubmitting(false);
           return;
         }
       }
 
       // Prepare form data for Formspree
-      let formDataToSend = new FormData();
+      const formDataToSend = new FormData();
       formDataToSend.append('firstName', formData.firstName);
       formDataToSend.append('lastName', formData.lastName);
       formDataToSend.append('email', formData.email);
@@ -103,18 +125,17 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
       formDataToSend.append('project3', formData.project3);
 
       // Add message with file info
-      if (uploadedFileName) {
-        formDataToSend.append('message', `✅ CV uploaded to Dropbox\nFilename: ${uploadedFileName}\n\n📧 Candidat: ${formData.firstName} ${formData.lastName}\nEmail: ${formData.email}`);
-        console.log('Submitting form with Dropbox CV reference');
+      if (uploadedPath) {
+        formDataToSend.append('message', `CV sauvegardé dans Vercel Blob (stockage privé)\nChemin : ${uploadedPath}\n\nCandidat : ${formData.firstName} ${formData.lastName}\nEmail : ${formData.email}`);
       } else {
-        formDataToSend.append('message', `📧 Candidat: ${formData.firstName} ${formData.lastName}\nEmail: ${formData.email}\n\nℹ️ No CV file provided`);
-        console.log('Submitting form without CV');
+        formDataToSend.append('message', `Candidat : ${formData.firstName} ${formData.lastName}\nEmail : ${formData.email}\n\nAucun CV fourni`);
       }
 
       console.log('Sending form to Formspree...');
       const response = await fetch('https://formspree.io/f/mjywgpao', {
         method: 'POST',
         body: formDataToSend,
+        headers: { Accept: 'application/json' },
       });
 
       console.log('Response status:', response.status);
@@ -141,31 +162,13 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
           setSubmitStatus('idle');
         }, 1500);
       } else {
-        throw new Error(`Formspree returned status ${response.status}`);
+        setErrorMessage(await getFormspreeError(response));
+        setSubmitStatus('error');
       }
-    } catch (error: any) {
-      console.warn('Fetch error (may still have submitted):', error?.message);
-      console.log('=== FORM SUBMISSION END (with warning) ===');
-      
-      // Even if fetch fails, Formspree likely received the data
-      // Show success to user
-      setSubmitStatus('success');
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        project1: subjects[0] || '',
-        project2: subjects[1] || '',
-        project3: subjects[2] || '',
-      });
-      
-      const fileInput = document.querySelector('input[name="cv"]') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
-      
-      setTimeout(() => {
-        onClose();
-        setSubmitStatus('idle');
-      }, 1500);
+    } catch (error) {
+      console.error('Form submission failed:', error);
+      setErrorMessage('Impossible d’envoyer la candidature. Vérifiez votre connexion et réessayez.');
+      setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);
     }
@@ -193,18 +196,18 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
             <div className="form-message success">
               <div style={{ marginBottom: '12px' }}>✓ Candidature reçue avec succès !</div>
               <div style={{ fontSize: '14px', color: '#0e8a5f', fontWeight: '500' }}>
-                ✅ Votre CV a été sauvegardé dans notre système. Nous vous contacterons bientôt.
+                Nous vous contacterons bientôt.
               </div>
             </div>
           )}
 
           {submitStatus === 'error' && (
-            <div className="form-message error">
-              ✗ Une erreur s'est produite. Veuillez vérifier votre connexion internet et réessayez. Si le problème persiste, envoyez votre CV directement à ambulink.contact@gmail.com
+            <div className="form-message error" role="alert">
+              ✗ {errorMessage || 'Une erreur s’est produite. Veuillez vérifier votre candidature et réessayer.'}
             </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate>
+          <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="firstName">Prénom</label>
               <input
@@ -258,7 +261,7 @@ export default function InternshipForm({ isOpen, onClose, subjects }: Internship
                 disabled={isSubmitting}
               />
               <small style={{ color: '#4A5878', fontSize: '13px', marginTop: '4px' }}>
-                Téléchargez votre CV - il sera automatiquement sauvegardé dans nos dossiers.
+                PDF, DOC ou DOCX, 4 Mo maximum. Votre CV sera sauvegardé dans un stockage privé.
               </small>
             </div>
 
