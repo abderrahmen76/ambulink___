@@ -382,6 +382,12 @@ export default function PrivacyPage() {
               administrateurs ne peuvent pas encore être supprimés par ce flux ;
               contactez <a href={`mailto:${contactEmail}`}>{contactEmail}</a>.
             </p>
+            <p>
+              La page <a href="/account-deletion">Suppression du compte</a>{' '}
+              décrit la procédure dans l’application et la demande externe par
+              e-mail pour les personnes qui ne peuvent pas utiliser
+              l’application.
+            </p>
 
             <h2 id="historique">16. Enregistrements historiques après la suppression</h2>
             <p>
@@ -466,6 +472,7 @@ export default function PrivacyPage() {
             <a href="/privacy" aria-current="page">
               Politique de confidentialité
             </a>
+            <a href="/account-deletion">Suppression du compte</a>
             <a href="/">Accueil</a>
           </div>
         </div>

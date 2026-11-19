@@ -874,6 +874,30 @@ button.btn.small {
   font-size: 15px;
 }
 
+/* account deletion */
+.deletion-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 20px 0 18px;
+  padding: 20px 22px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.deletion-cta p {
+  margin: 0;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.deletion-cta .btn {
+  flex-shrink: 0;
+}
+
 /* responsive */
 @media (max-width: 1023.98px) {
   .hero-in,

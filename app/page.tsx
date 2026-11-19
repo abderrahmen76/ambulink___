@@ -471,6 +471,7 @@ export default function HomePage() {
           <p>© <span id="y">2026</span> AmbuLink · Sfax, Tunisie</p>
           <div className="foot-links">
             <a href="/privacy">Politique de confidentialité</a>
+            <a href="/account-deletion">Suppression du compte</a>
             <a href="#top">Retour en haut ↑</a>
           </div>
         </div>
