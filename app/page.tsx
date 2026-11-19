@@ -469,7 +469,10 @@ export default function HomePage() {
         <div className="wrap foot-in">
           <img src="/logo.png" alt="AmbuLink" width={634} height={525} />
           <p>© <span id="y">2026</span> AmbuLink · Sfax, Tunisie</p>
-          <a href="#top">Retour en haut ↑</a>
+          <div className="foot-links">
+            <a href="/privacy">Politique de confidentialité</a>
+            <a href="#top">Retour en haut ↑</a>
+          </div>
         </div>
       </footer>
 
